@@ -1,8 +1,16 @@
 # Rollout videos
 
-Companion page for the thesis: a single scrollable page listing closed-loop
-simulation rollouts, each with a permanent link to cite from a figure caption.
-MP4 and GIF are both supported.
+Companion page for the thesis: closed-loop simulation rollouts, each with a
+permanent link to cite from a figure caption. MP4 and GIF are both supported.
+
+The page has two modes, chosen by the URL:
+
+- `.../` - gallery of every video.
+- `.../#some-video-id` - that video **alone**, large and centred, with an
+  "All videos" button back to the gallery. This is what a thesis link opens.
+
+Both live in `index.html`; there is no second page, so every link keeps working
+whichever mode it points at.
 
 This is a **separate repository from the research code**, deliberately: videos are
 large and would permanently bloat the research repo's history. It lives inside that
