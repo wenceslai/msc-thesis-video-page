@@ -33,7 +33,20 @@
     max-width:min(1240px, 92vw); max-height:80vh;
     background:#000; border:1px solid var(--line); border-radius:10px; box-shadow:var(--shadow);
   }
-  .single .cap{color:var(--muted); font-size:13px; text-align:center; word-break:break-word}
+  .single .gtitle{margin:0; font-size:13px; color:var(--muted); letter-spacing:.02em; text-align:center}
+  .single .stage{display:flex; align-items:center; justify-content:center; max-width:100%}
+  .single .cap{color:var(--muted); font-size:13px; text-align:center; word-break:break-word; margin:0}
+  .picker{
+    display:flex; flex-wrap:wrap; gap:8px; justify-content:center;
+    max-width:min(1240px,92vw); margin-top:2px;
+  }
+  .chip{
+    font:inherit; font-size:12.5px; padding:6px 12px; cursor:pointer; white-space:nowrap;
+    background:var(--card); color:var(--muted); border:1px solid var(--line);
+    border-radius:999px; transition:color .15s, border-color .15s, background .15s;
+  }
+  .chip:hover{color:var(--accent); border-color:var(--accent)}
+  .chip.on{color:var(--accent); border-color:var(--accent); background:var(--accent-soft); font-weight:500}
   .single .cap .fmt{
     text-transform:uppercase; font-size:11px; letter-spacing:.04em; margin-left:8px; opacity:.75;
   }
@@ -103,19 +116,31 @@ const singleEl = document.getElementById('single');
 const galleryEl = document.getElementById('gallery');
 const grid = document.getElementById('grid');
 const countEl = document.getElementById('count');
-let videos = [];
+let entries = [];
 
 const linkFor = id => location.origin + location.pathname + '#' + id;
 
-function mediaEl(v, {big}){
-  if(v.type === 'gif'){
+// Names contain spaces, "+" and parentheses, so encode each path segment.
+// encodeURI alone would leave "#" and "?" intact and break those paths.
+const encodePath = p => p.split('/').map(encodeURIComponent).join('/');
+
+const itemsOf = e => e.kind === 'group' ? e.items : [e];
+
+function fmtBadge(text){
+  const span = document.createElement('span');
+  span.className = 'fmt'; span.textContent = text;
+  return span;
+}
+
+function mediaEl(item, {big}){
+  if(item.type === 'gif'){
     const img = document.createElement('img');
-    img.src = v.file; img.alt = v.name;
+    img.src = encodePath(item.file); img.alt = item.label;
     if(!big) img.loading = 'lazy';
     return img;
   }
   const vid = document.createElement('video');
-  vid.src = v.file;
+  vid.src = encodePath(item.file);
   vid.controls = true; vid.loop = true; vid.muted = true; vid.playsInline = true;
   // The single view is the only video on screen, so autoplay it (muted, so browsers
   // allow it) to match how GIFs animate by themselves. The gallery stays inert.
@@ -124,17 +149,42 @@ function mediaEl(v, {big}){
   return vid;
 }
 
-function renderSingle(v){
+function renderSingle(entry){
   singleEl.replaceChildren();
-  singleEl.appendChild(mediaEl(v, {big:true}));
+  const items = itemsOf(entry);
+  const isGroup = entry.kind === 'group';
 
+  if(isGroup){
+    const gt = document.createElement('p');
+    gt.className = 'gtitle'; gt.textContent = entry.name;
+    singleEl.appendChild(gt);
+  }
+
+  const stage = document.createElement('div');
+  stage.className = 'stage';
   const cap = document.createElement('p');
   cap.className = 'cap';
-  cap.textContent = v.name;
-  const fmt = document.createElement('span');
-  fmt.className = 'fmt'; fmt.textContent = v.type;
-  cap.appendChild(fmt);
-  singleEl.appendChild(cap);
+  const picker = document.createElement('div');
+  picker.className = 'picker';
+
+  const show = i => {
+    const it = items[i];
+    stage.replaceChildren(mediaEl(it, {big:true}));   // rebuild so it restarts
+    cap.replaceChildren(document.createTextNode(it.label), fmtBadge(it.type));
+    [...picker.children].forEach((c, j) => c.classList.toggle('on', j === i));
+  };
+
+  if(isGroup){
+    items.forEach((it, i) => {
+      const chip = document.createElement('button');
+      chip.className = 'chip'; chip.textContent = it.label;
+      chip.onclick = () => show(i);
+      picker.appendChild(chip);
+    });
+  }
+
+  singleEl.append(stage, cap);
+  if(isGroup) singleEl.appendChild(picker);
 
   const all = document.createElement('a');
   all.className = 'allbtn'; all.textContent = 'All videos'; all.href = location.pathname;
@@ -145,33 +195,41 @@ function renderSingle(v){
   };
   singleEl.appendChild(all);
 
+  show(0);
   singleEl.hidden = false; galleryEl.hidden = true;
   window.scrollTo(0, 0);
 }
 
 function buildGallery(){
-  if(grid.childElementCount) return;              // build once
-  if(!videos.length){
+  if(grid.childElementCount) return;               // build once
+  if(!entries.length){
     countEl.textContent = '';
     grid.innerHTML = '<div class="empty">No videos yet. Drop <code>.mp4</code> or <code>.gif</code> files into ' +
       '<code>media/</code>, then run <code>python3 refresh.py</code>.</div>';
     return;
   }
-  countEl.textContent = videos.length + (videos.length === 1 ? ' video' : ' videos');
-  for(const v of videos){
+  const clips = entries.reduce((n, e) => n + itemsOf(e).length, 0);
+  countEl.textContent = clips === entries.length
+    ? `${clips} videos`
+    : `${entries.length} entries \u00b7 ${clips} videos`;
+
+  for(const e of entries){
+    const isGroup = e.kind === 'group';
+    const preview = itemsOf(e)[0];
+
     const card = document.createElement('article');
-    card.className = 'card'; card.id = 'card-' + v.id;
-    if(v.aspect) card.style.setProperty('--ar', v.aspect);
+    card.className = 'card'; card.id = 'card-' + e.id;
+    if(preview.aspect) card.style.setProperty('--ar', preview.aspect);
 
     const media = document.createElement('div');
     media.className = 'media';
-    if(v.type === 'gif'){                        // GIFs need no controls, so the whole tile opens it
+    if(preview.type === 'gif'){                    // GIFs need no controls, so the tile opens it
       const a = document.createElement('a');
-      a.href = '#' + v.id;
-      a.appendChild(mediaEl(v, {big:false}));
+      a.href = '#' + e.id;
+      a.appendChild(mediaEl(preview, {big:false}));
       media.appendChild(a);
     } else {
-      media.appendChild(mediaEl(v, {big:false}));
+      media.appendChild(mediaEl(preview, {big:false}));
     }
 
     const meta = document.createElement('div');
@@ -179,22 +237,20 @@ function buildGallery(){
     const name = document.createElement('div');
     name.className = 'name';
     const nameLink = document.createElement('a');
-    nameLink.href = '#' + v.id; nameLink.textContent = v.name;
-    name.appendChild(nameLink);
-    const fmt = document.createElement('span');
-    fmt.className = 'fmt'; fmt.textContent = v.type;
-    name.appendChild(fmt);
+    nameLink.href = '#' + e.id;
+    nameLink.textContent = isGroup ? e.name : e.label;
+    name.append(nameLink, fmtBadge(isGroup ? `${e.items.length} videos` : e.type));
 
     const actions = document.createElement('div');
     actions.className = 'actions';
     const open = document.createElement('a');
-    open.className = 'btn'; open.textContent = 'Open'; open.href = '#' + v.id;
+    open.className = 'btn'; open.textContent = 'Open'; open.href = '#' + e.id;
     const copy = document.createElement('button');
     copy.className = 'btn'; copy.textContent = 'Copy link';
     copy.onclick = async () => {
-      const url = linkFor(v.id);
+      const url = linkFor(e.id);
       try{ await navigator.clipboard.writeText(url); }
-      catch(e){ window.prompt('Copy this link:', url); return; }
+      catch(err){ window.prompt('Copy this link:', url); return; }
       copy.textContent = 'Copied'; copy.classList.add('ok');
       setTimeout(() => { copy.textContent = 'Copy link'; copy.classList.remove('ok'); }, 1400);
     };
@@ -207,17 +263,17 @@ function buildGallery(){
 
 function render(){
   const id = decodeURIComponent(location.hash.slice(1));
-  const v = id && videos.find(x => x.id === id);
-  if(v){ renderSingle(v); return; }
+  const entry = id && entries.find(x => x.id === id);
+  if(entry){ renderSingle(entry); return; }
   buildGallery();
-  singleEl.replaceChildren();                    // stop any playing video
+  singleEl.replaceChildren();                      // stop any playing video
   singleEl.hidden = true; galleryEl.hidden = false;
 }
 
 fetch('videos.json', {cache:'no-store'})
   .then(r => r.ok ? r.json() : Promise.reject(new Error('videos.json missing')))
-  .then(list => { videos = list; render(); })
-  .catch(() => { videos = []; render(); });
+  .then(list => { entries = list; render(); })
+  .catch(() => { entries = []; render(); });
 
 window.addEventListener('hashchange', render);
 window.addEventListener('popstate', render);

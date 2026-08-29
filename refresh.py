@@ -1,5 +1,10 @@
 #!/usr/bin/env python3
-"""Scan media/ and regenerate videos.json, then print the link for each video.
+"""Scan media/ and regenerate videos.json, then print the link for each entry.
+
+A file directly in media/      -> one entry, shown on its own.
+A directory inside media/      -> one entry holding every video in it, shown with
+                                  a picker so the reader can step through them
+                                  (used for viewpoint sweeps).
 
 Usage:  python3 refresh.py
 """
@@ -33,15 +38,11 @@ def base_url():
     except Exception:
         return None
     m = re.match(r"(?:git@github\.com:|https://github\.com/)([^/]+)/(.+?)(?:\.git)?$", url)
-    if not m:
-        return None
-    owner, repo = m.group(1), m.group(2)
-    return f"https://{owner.lower()}.github.io/{repo}/"
+    return f"https://{m.group(1).lower()}.github.io/{m.group(2)}/" if m else None
 
 
 def aspect(path: Path):
-    """w/h as a CSS aspect-ratio, so cards reserve their height before media loads
-    and a #anchor link lands on the right card. None if ffprobe is unavailable."""
+    """w/h as a CSS aspect-ratio, so cards reserve their height before media loads."""
     if not FFPROBE:
         return None
     try:
@@ -56,29 +57,63 @@ def aspect(path: Path):
         return None
 
 
-def slug(rel: Path) -> str:
-    s = re.sub(r"[^a-z0-9]+", "-", str(rel.with_suffix("")).lower()).strip("-")
-    return s or "video"
+def natkey(s: str):
+    """Numeric-aware sort, so a sweep orders 5, 15, 30 rather than 15, 30, 5.
+    re.split alternates non-digit/digit chunks, so types always line up."""
+    return [int(t) if t.isdigit() else t.lower() for t in re.split(r"(\d+)", s)]
+
+
+def sortkey(p: Path):
+    """Sort on the stem, never the extension: with '.mp4' included, '_rollout.mp'
+    compares against '_rollout' and an unsuffixed baseline sorts after '...5'."""
+    return natkey(p.stem if p.is_file() else p.name)
+
+
+def is_video(p: Path):
+    return p.is_file() and p.suffix.lower() in EXTS
+
+
+def slug(text: str) -> str:
+    return re.sub(r"[^a-z0-9]+", "-", text.lower()).strip("-") or "video"
+
+
+def describe(path: Path):
+    """One playable item: label is the filename without its extension."""
+    return {
+        "label": path.stem,
+        "file": f"media/{path.relative_to(media).as_posix()}",
+        "type": EXTS[path.suffix.lower()],
+        "size_mb": round(path.stat().st_size / 1e6, 1),
+        "aspect": aspect(path),
+    }
 
 
 entries, seen = [], set()
-for path in sorted(p for p in media.rglob("*") if p.suffix.lower() in EXTS):
-    rel = path.relative_to(media)
-    sid = slug(rel)
-    if sid in seen:                       # distinct files must not share an anchor
+
+
+def claim(sid):
+    if sid in seen:
         n = 2
         while f"{sid}-{n}" in seen:
             n += 1
         sid = f"{sid}-{n}"
     seen.add(sid)
-    entries.append({
-        "id": sid,
-        "file": f"media/{rel.as_posix()}",
-        "name": rel.as_posix(),
-        "type": EXTS[path.suffix.lower()],
-        "size_mb": round(path.stat().st_size / 1e6, 1),
-        "aspect": aspect(path),
-    })
+    return sid
+
+
+for path in sorted(media.iterdir(), key=sortkey):
+    if is_video(path):
+        item = describe(path)
+        entries.append({"id": claim(slug(path.stem)), "kind": "file",
+                        "name": path.name, **item})
+    elif path.is_dir():
+        items = [describe(p) for p in sorted(
+            (q for q in path.rglob("*") if is_video(q)), key=sortkey)]
+        if not items:
+            print(f"  (skipping empty directory: {path.name})")
+            continue
+        entries.append({"id": claim(slug(path.name)), "kind": "group",
+                        "name": path.name, "items": items})
 
 (root / "videos.json").write_text(json.dumps(entries, indent=2) + "\n")
 
@@ -86,32 +121,35 @@ if not entries:
     print(f"No videos found in {media}. Drop .mp4 or .gif files there and rerun.")
     sys.exit(0)
 
-total = sum(e["size_mb"] for e in entries)
-print(f"{len(entries)} video(s), {total:.1f} MB total -> videos.json\n")
+flat = [i for e in entries for i in (e["items"] if e["kind"] == "group" else [e])]
+total = sum(i["size_mb"] for i in flat)
+groups = sum(1 for e in entries if e["kind"] == "group")
+print(f"{len(entries)} entries ({len(flat)} videos, {groups} collections), "
+      f"{total:.1f} MB -> videos.json\n")
 
 base = base_url()
 width = max(len(e["name"]) for e in entries)
 for e in entries:
     link = f"{base}#{e['id']}" if base else f"<pages-url>#{e['id']}"
-    print(f"  {e['name']:<{width}}  {link}")
+    tag = f"  [{len(e['items'])} videos]" if e["kind"] == "group" else ""
+    print(f"  {e['name']:<{width}}  {link}{tag}")
 
 if not base:
     print("\nNo GitHub origin remote yet, so the site URL is unknown.")
-    print("Add one and rerun to get real links:")
-    print("  git remote add origin git@github.com:<you>/<repo>.git")
+    print("Add one and rerun:  git remote add origin git@github.com:<you>/<repo>.git")
 
 print("\nIn LaTeX, escape the hash:  \\href{...\\#anchor}{[video]}")
 
-too_big = [e for e in entries if e["size_mb"] > GITHUB_FILE_LIMIT_MB]
-biggish = [e for e in entries if GITHUB_WARN_MB < e["size_mb"] <= GITHUB_FILE_LIMIT_MB]
+too_big = [i for i in flat if i["size_mb"] > GITHUB_FILE_LIMIT_MB]
+biggish = [i for i in flat if GITHUB_WARN_MB < i["size_mb"] <= GITHUB_FILE_LIMIT_MB]
 if too_big:
     print(f"\nERROR: GitHub rejects any file over {GITHUB_FILE_LIMIT_MB} MB. Shrink these before pushing:")
-    for e in too_big:
-        print(f"  {e['name']}  {e['size_mb']} MB")
+    for i in too_big:
+        print(f"  {i['file']}  {i['size_mb']} MB")
     print("  e.g.  ffmpeg -i in.gif -vf scale=640:-2 out.mp4")
 if biggish:
     print(f"\nNote: over {GITHUB_WARN_MB} MB, GitHub warns on push:")
-    for e in biggish:
-        print(f"  {e['name']}  {e['size_mb']} MB")
+    for i in biggish:
+        print(f"  {i['file']}  {i['size_mb']} MB")
 if total > PAGES_SITE_LIMIT_MB * 0.9:
     print(f"\nWARNING: {total:.0f} MB is near the {PAGES_SITE_LIMIT_MB} MB GitHub Pages site limit.")

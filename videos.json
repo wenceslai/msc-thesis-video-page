@@ -1,98 +1,239 @@
 [
   {
-    "id": "task-1-ep0-rollout",
-    "file": "media/task_1_ep0_rollout.mp4",
-    "name": "task_1_ep0_rollout.mp4",
-    "type": "mp4",
-    "size_mb": 0.2,
-    "aspect": "1024/512"
-  },
-  {
-    "id": "task-1-ep1-rollout",
-    "file": "media/task_1_ep1_rollout.mp4",
-    "name": "task_1_ep1_rollout.mp4",
-    "type": "mp4",
-    "size_mb": 0.3,
-    "aspect": "1024/512"
-  },
-  {
-    "id": "task-1-ep2-rollout-stuck-recovers",
-    "file": "media/task_1_ep2_rollout_stuck-recovers.mp4",
-    "name": "task_1_ep2_rollout_stuck-recovers.mp4",
+    "id": "can-misses-but-recovers",
+    "kind": "file",
+    "name": "Can - misses but recovers.mp4",
+    "label": "Can - misses but recovers",
+    "file": "media/Can - misses but recovers.mp4",
     "type": "mp4",
     "size_mb": 0.6,
     "aspect": "1024/512"
   },
   {
-    "id": "task-3-ep0-rollout",
-    "file": "media/task_3_ep0_rollout.mp4",
-    "name": "task_3_ep0_rollout.mp4",
-    "type": "mp4",
-    "size_mb": 0.4,
-    "aspect": "1024/512"
-  },
-  {
-    "id": "task-3-ep2-rollout-occlusion-causesflip",
-    "file": "media/task_3_ep2_rollout_occlusion_causesflip.mp4",
-    "name": "task_3_ep2_rollout_occlusion_causesflip.mp4",
-    "type": "mp4",
-    "size_mb": 1.0,
-    "aspect": "1024/512"
-  },
-  {
-    "id": "task-3-episode-39-track",
-    "file": "media/task_3_episode_39_track.gif",
-    "name": "task_3_episode_39_track.gif",
-    "type": "gif",
-    "size_mb": 9.3,
-    "aspect": "1024/512"
-  },
-  {
-    "id": "task-3-episode-5-track",
-    "file": "media/task_3_episode_5_track.gif",
-    "name": "task_3_episode_5_track.gif",
-    "type": "gif",
-    "size_mb": 6.3,
-    "aspect": "1024/512"
-  },
-  {
-    "id": "task-4-ep2-rollout",
-    "file": "media/task_4_ep2_rollout.mp4",
-    "name": "task_4_ep2_rollout.mp4",
+    "id": "can-success",
+    "kind": "file",
+    "name": "Can - success.mp4",
+    "label": "Can - success",
+    "file": "media/Can - success.mp4",
     "type": "mp4",
     "size_mb": 0.2,
     "aspect": "1024/512"
   },
   {
-    "id": "task-4-episode-2-track",
-    "file": "media/task_4_episode_2_track.gif",
-    "name": "task_4_episode_2_track.gif",
-    "type": "gif",
-    "size_mb": 4.2,
-    "aspect": "1024/512"
+    "id": "can-viewpoint-shifts",
+    "kind": "group",
+    "name": "Can - viewpoint shifts",
+    "items": [
+      {
+        "label": "task_1_ep0_rollout",
+        "file": "media/Can - viewpoint shifts/task_1_ep0_rollout.mp4",
+        "type": "mp4",
+        "size_mb": 0.2,
+        "aspect": "1024/512"
+      },
+      {
+        "label": "task_1_ep0_rollout5",
+        "file": "media/Can - viewpoint shifts/task_1_ep0_rollout5.mp4",
+        "type": "mp4",
+        "size_mb": 1.4,
+        "aspect": "1024/512"
+      },
+      {
+        "label": "task_1_ep0_rollout15",
+        "file": "media/Can - viewpoint shifts/task_1_ep0_rollout15.mp4",
+        "type": "mp4",
+        "size_mb": 0.2,
+        "aspect": "1024/512"
+      },
+      {
+        "label": "task_1_ep0_rollout30",
+        "file": "media/Can - viewpoint shifts/task_1_ep0_rollout30.mp4",
+        "type": "mp4",
+        "size_mb": 0.3,
+        "aspect": "1024/512"
+      },
+      {
+        "label": "task_1_ep0_rollout45",
+        "file": "media/Can - viewpoint shifts/task_1_ep0_rollout45.mp4",
+        "type": "mp4",
+        "size_mb": 0.3,
+        "aspect": "1024/512"
+      },
+      {
+        "label": "task_1_ep0_rollout60",
+        "file": "media/Can - viewpoint shifts/task_1_ep0_rollout60.mp4",
+        "type": "mp4",
+        "size_mb": 0.3,
+        "aspect": "1024/512"
+      },
+      {
+        "label": "task_1_ep0_rollout75",
+        "file": "media/Can - viewpoint shifts/task_1_ep0_rollout75.mp4",
+        "type": "mp4",
+        "size_mb": 0.3,
+        "aspect": "1024/512"
+      }
+    ]
   },
   {
-    "id": "task-4-episode-2-track-fixed",
-    "file": "media/task_4_episode_2_track_fixed.gif",
-    "name": "task_4_episode_2_track_fixed.gif",
-    "type": "gif",
-    "size_mb": 4.0,
-    "aspect": "1024/512"
+    "id": "drift",
+    "kind": "group",
+    "name": "Drift",
+    "items": [
+      {
+        "label": "Stack 2 - FP + SAM3",
+        "file": "media/Drift/Stack 2 - FP + SAM3.gif",
+        "type": "gif",
+        "size_mb": 4.0,
+        "aspect": "1024/512"
+      },
+      {
+        "label": "Stack 2 - FP only (drift)",
+        "file": "media/Drift/Stack 2 - FP only (drift).gif",
+        "type": "gif",
+        "size_mb": 4.2,
+        "aspect": "1024/512"
+      }
+    ]
   },
   {
-    "id": "task-5-episode-20-track",
-    "file": "media/task_5_episode_20_track.gif",
-    "name": "task_5_episode_20_track.gif",
+    "id": "libero-success",
+    "kind": "file",
+    "name": "libero - success.gif",
+    "label": "libero - success",
+    "file": "media/libero - success.gif",
     "type": "gif",
     "size_mb": 47.9,
     "aspect": "1024/512"
   },
   {
-    "id": "task-6-ep0-rollout",
-    "file": "media/task_6_ep0_rollout.mp4",
-    "name": "task_6_ep0_rollout.mp4",
+    "id": "occlusions",
+    "kind": "group",
+    "name": "Occlusions",
+    "items": [
+      {
+        "label": "Square - FP + SAM3",
+        "file": "media/Occlusions/Square - FP + SAM3.gif",
+        "type": "gif",
+        "size_mb": 6.3,
+        "aspect": "1024/512"
+      },
+      {
+        "label": "Square - FP only (drift)",
+        "file": "media/Occlusions/Square - FP only (drift).gif",
+        "type": "gif",
+        "size_mb": 9.3,
+        "aspect": "1024/512"
+      }
+    ]
+  },
+  {
+    "id": "square-example",
+    "kind": "file",
+    "name": "Square - example.gif",
+    "label": "Square - example",
+    "file": "media/Square - example.gif",
+    "type": "gif",
+    "size_mb": 12.9,
+    "aspect": "1024/512"
+  },
+  {
+    "id": "square-failed",
+    "kind": "file",
+    "name": "Square - failed.mp4",
+    "label": "Square - failed",
+    "file": "media/Square - failed.mp4",
+    "type": "mp4",
+    "size_mb": 1.0,
+    "aspect": "1024/512"
+  },
+  {
+    "id": "square-viewpoint-shifts",
+    "kind": "group",
+    "name": "Square - viewpoint shifts",
+    "items": [
+      {
+        "label": "task_3_ep0_rollout0",
+        "file": "media/Square - viewpoint shifts/task_3_ep0_rollout0.mp4",
+        "type": "mp4",
+        "size_mb": 0.4,
+        "aspect": "1024/512"
+      },
+      {
+        "label": "task_3_ep0_rollout5",
+        "file": "media/Square - viewpoint shifts/task_3_ep0_rollout5.mp4",
+        "type": "mp4",
+        "size_mb": 0.4,
+        "aspect": "1024/512"
+      },
+      {
+        "label": "task_3_ep0_rollout15",
+        "file": "media/Square - viewpoint shifts/task_3_ep0_rollout15.mp4",
+        "type": "mp4",
+        "size_mb": 0.5,
+        "aspect": "1024/512"
+      },
+      {
+        "label": "task_3_ep0_rollout30",
+        "file": "media/Square - viewpoint shifts/task_3_ep0_rollout30.mp4",
+        "type": "mp4",
+        "size_mb": 0.5,
+        "aspect": "1024/512"
+      },
+      {
+        "label": "task_3_ep0_rollout45",
+        "file": "media/Square - viewpoint shifts/task_3_ep0_rollout45.mp4",
+        "type": "mp4",
+        "size_mb": 1.0,
+        "aspect": "1024/512"
+      },
+      {
+        "label": "task_3_ep0_rollout60",
+        "file": "media/Square - viewpoint shifts/task_3_ep0_rollout60.mp4",
+        "type": "mp4",
+        "size_mb": 0.5,
+        "aspect": "1024/512"
+      }
+    ]
+  },
+  {
+    "id": "stack-2-success",
+    "kind": "file",
+    "name": "Stack 2 success.mp4",
+    "label": "Stack 2 success",
+    "file": "media/Stack 2 success.mp4",
+    "type": "mp4",
+    "size_mb": 0.2,
+    "aspect": "1024/512"
+  },
+  {
+    "id": "stack-three-success",
+    "kind": "file",
+    "name": "stack three - success.mp4",
+    "label": "stack three - success",
+    "file": "media/stack three - success.mp4",
     "type": "mp4",
     "size_mb": 0.5,
     "aspect": "1024/512"
+  },
+  {
+    "id": "task-3-ep0-rollout",
+    "kind": "file",
+    "name": "task_3_ep0_rollout.mp4",
+    "label": "task_3_ep0_rollout",
+    "file": "media/task_3_ep0_rollout.mp4",
+    "type": "mp4",
+    "size_mb": 0.4,
+    "aspect": "1024/512"
+  },
+  {
+    "id": "wilor-hands-demo",
+    "kind": "file",
+    "name": "Wilor Hands Demo.gif",
+    "label": "Wilor Hands Demo",
+    "file": "media/Wilor Hands Demo.gif",
+    "type": "gif",
+    "size_mb": 9.8,
+    "aspect": "1440/319"
   }
 ]

@@ -19,9 +19,20 @@ project folder for convenience, but is ignored by it (`rollout-videos/` in its
 
 ## Adding videos
 
-1. Drop `.mp4` or `.gif` files into `media/` (subfolders are fine).
-2. Run `python3 refresh.py` — rebuilds `videos.json` and prints one link per video.
+1. Put files into `media/`:
+   - **A file directly in `media/`** gets its own link and is shown on its own.
+   - **A directory inside `media/`** becomes one link holding every video in it,
+     shown with a picker underneath so the reader can step through them. This is
+     what the viewpoint sweeps use.
+2. Run `python3 refresh.py` — rebuilds `videos.json` and prints one link per entry.
 3. `git add -A && git commit -m "add videos" && git push`
+
+Inside a collection, items are labelled by filename without the extension and
+sorted numerically — so a sweep reads `rollout`, `rollout5`, `rollout15`,
+`rollout30`, not `rollout15`, `rollout30`, `rollout5`.
+
+Spaces, `+` and parentheses in names are fine; the page URL-encodes each path
+segment.
 
 The site URL is derived from this repo's `origin` remote, so the printed links are
 correct automatically once the remote is set.
