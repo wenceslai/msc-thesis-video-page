@@ -128,6 +128,16 @@
     ]
   },
   {
+    "id": "sam3d-tracking-drift",
+    "kind": "file",
+    "name": "sam3d-tracking-drift.gif",
+    "label": "sam3d-tracking-drift",
+    "file": "media/sam3d-tracking-drift.gif",
+    "type": "gif",
+    "size_mb": 20.7,
+    "aspect": "1400/600"
+  },
+  {
     "id": "square-example",
     "kind": "file",
     "name": "Square - example.gif",
