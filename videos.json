@@ -1,1 +1,98 @@
-[]
+[
+  {
+    "id": "task-1-ep0-rollout",
+    "file": "media/task_1_ep0_rollout.mp4",
+    "name": "task_1_ep0_rollout.mp4",
+    "type": "mp4",
+    "size_mb": 0.2,
+    "aspect": "1024/512"
+  },
+  {
+    "id": "task-1-ep1-rollout",
+    "file": "media/task_1_ep1_rollout.mp4",
+    "name": "task_1_ep1_rollout.mp4",
+    "type": "mp4",
+    "size_mb": 0.3,
+    "aspect": "1024/512"
+  },
+  {
+    "id": "task-1-ep2-rollout-stuck-recovers",
+    "file": "media/task_1_ep2_rollout_stuck-recovers.mp4",
+    "name": "task_1_ep2_rollout_stuck-recovers.mp4",
+    "type": "mp4",
+    "size_mb": 0.6,
+    "aspect": "1024/512"
+  },
+  {
+    "id": "task-3-ep0-rollout",
+    "file": "media/task_3_ep0_rollout.mp4",
+    "name": "task_3_ep0_rollout.mp4",
+    "type": "mp4",
+    "size_mb": 0.4,
+    "aspect": "1024/512"
+  },
+  {
+    "id": "task-3-ep2-rollout-occlusion-causesflip",
+    "file": "media/task_3_ep2_rollout_occlusion_causesflip.mp4",
+    "name": "task_3_ep2_rollout_occlusion_causesflip.mp4",
+    "type": "mp4",
+    "size_mb": 1.0,
+    "aspect": "1024/512"
+  },
+  {
+    "id": "task-3-episode-39-track",
+    "file": "media/task_3_episode_39_track.gif",
+    "name": "task_3_episode_39_track.gif",
+    "type": "gif",
+    "size_mb": 9.3,
+    "aspect": "1024/512"
+  },
+  {
+    "id": "task-3-episode-5-track",
+    "file": "media/task_3_episode_5_track.gif",
+    "name": "task_3_episode_5_track.gif",
+    "type": "gif",
+    "size_mb": 6.3,
+    "aspect": "1024/512"
+  },
+  {
+    "id": "task-4-ep2-rollout",
+    "file": "media/task_4_ep2_rollout.mp4",
+    "name": "task_4_ep2_rollout.mp4",
+    "type": "mp4",
+    "size_mb": 0.2,
+    "aspect": "1024/512"
+  },
+  {
+    "id": "task-4-episode-2-track",
+    "file": "media/task_4_episode_2_track.gif",
+    "name": "task_4_episode_2_track.gif",
+    "type": "gif",
+    "size_mb": 4.2,
+    "aspect": "1024/512"
+  },
+  {
+    "id": "task-4-episode-2-track-fixed",
+    "file": "media/task_4_episode_2_track_fixed.gif",
+    "name": "task_4_episode_2_track_fixed.gif",
+    "type": "gif",
+    "size_mb": 4.0,
+    "aspect": "1024/512"
+  },
+  {
+    "id": "task-5-episode-20-track",
+    "file": "media/task_5_episode_20_track.gif",
+    "name": "task_5_episode_20_track.gif",
+    "type": "gif",
+    "size_mb": 47.9,
+    "aspect": "1024/512"
+  },
+  {
+    "id": "task-6-ep0-rollout",
+    "file": "media/task_6_ep0_rollout.mp4",
+    "name": "task_6_ep0_rollout.mp4",
+    "type": "mp4",
+    "size_mb": 0.5,
+    "aspect": "1024/512"
+  }
+]
