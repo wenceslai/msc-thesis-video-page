@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rollout Videos — View-Agnostic Imitation Learning</title>
+<style>
+  :root{
+    --bg:#fbfbfa; --card:#ffffff; --fg:#1a1a19; --muted:#6b6b66;
+    --line:#e4e4e0; --accent:#b35b2e; --accent-soft:#f5e9e2; --shadow:0 1px 2px rgba(0,0,0,.05);
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --bg:#161614; --card:#1f1e1c; --fg:#eceae6; --muted:#9c988f;
+      --line:#2f2d2a; --accent:#e08a5a; --accent-soft:#3a2a20; --shadow:0 1px 2px rgba(0,0,0,.3);
+    }
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; background:var(--bg); color:var(--fg);
+    font:15px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1100px; margin:0 auto; padding:48px 24px 96px}
+  header{border-bottom:1px solid var(--line); padding-bottom:24px; margin-bottom:32px}
+  h1{font-size:24px; font-weight:600; margin:0 0 6px; letter-spacing:-.01em}
+  .sub{color:var(--muted); font-size:14px; margin:0}
+  .count{color:var(--muted); font-size:13px; margin:24px 0 12px}
+  .grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(320px,1fr)); gap:24px; align-items:start}
+  .card{
+    background:var(--card); border:1px solid var(--line); border-radius:10px;
+    overflow:hidden; box-shadow:var(--shadow); scroll-margin-top:24px;
+    transition:border-color .2s, box-shadow .2s;
+  }
+  .card:target, .card.is-target{border-color:var(--accent); box-shadow:0 0 0 3px var(--accent-soft)}
+  .media{background:#000; display:flex; align-items:center; justify-content:center; aspect-ratio:var(--ar,16/9)}
+  .media video, .media img{display:block; width:100%; height:100%; object-fit:contain}
+  .meta{padding:12px 14px; display:flex; align-items:center; gap:10px; justify-content:space-between}
+  .name{font-size:13px; font-weight:500; word-break:break-word; min-width:0}
+  .name .fmt{color:var(--muted); font-weight:400; font-size:11px; text-transform:uppercase; letter-spacing:.04em; margin-left:6px}
+  .copy{
+    flex:none; font:inherit; font-size:12px; padding:5px 11px; cursor:pointer; white-space:nowrap;
+    background:transparent; color:var(--muted); border:1px solid var(--line); border-radius:6px;
+    transition:all .15s;
+  }
+  .copy:hover{color:var(--accent); border-color:var(--accent)}
+  .copy.ok{color:var(--accent); border-color:var(--accent); background:var(--accent-soft)}
+  .empty{
+    grid-column:1/-1; border:1px dashed var(--line); border-radius:10px; padding:40px 24px; text-align:center; color:var(--muted);
+  }
+  code{
+    font-family:ui-monospace,SFMono-Regular,Menlo,monospace; font-size:12.5px;
+    background:var(--accent-soft); color:var(--accent); padding:1px 5px; border-radius:4px;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Rollout Videos</h1>
+    <p class="sub">Closed-loop simulation rollouts accompanying the thesis. Each video has its own permanent link.</p>
+  </header>
+  <p class="count" id="count"></p>
+  <div class="grid" id="grid"></div>
+</div>
+<script>
+const grid = document.getElementById('grid');
+const countEl = document.getElementById('count');
+
+function linkFor(id){
+  return location.origin + location.pathname + '#' + id;
+}
+
+fetch('videos.json', {cache:'no-store'})
+  .then(r => r.ok ? r.json() : Promise.reject(new Error('videos.json missing')))
+  .then(list => {
+    if(!list.length) return showEmpty();
+    countEl.textContent = list.length + (list.length === 1 ? ' video' : ' videos');
+    for(const v of list){
+      const card = document.createElement('article');
+      card.className = 'card';
+      card.id = v.id;
+      if(v.aspect) card.style.setProperty('--ar', v.aspect);
+
+      const media = document.createElement('div');
+      media.className = 'media';
+      if(v.type === 'gif'){
+        const img = document.createElement('img');
+        img.src = v.file; img.alt = v.name; img.loading = 'lazy';
+        media.appendChild(img);
+      } else {
+        const vid = document.createElement('video');
+        vid.src = v.file;
+        vid.controls = true; vid.loop = true; vid.muted = true;
+        vid.playsInline = true; vid.preload = 'none';
+        media.appendChild(vid);
+      }
+
+      const meta = document.createElement('div');
+      meta.className = 'meta';
+      const name = document.createElement('div');
+      name.className = 'name';
+      name.textContent = v.name;
+      const fmt = document.createElement('span');
+      fmt.className = 'fmt'; fmt.textContent = v.type;
+      name.appendChild(fmt);
+
+      const btn = document.createElement('button');
+      btn.className = 'copy'; btn.textContent = 'Copy link';
+      btn.onclick = async () => {
+        const url = linkFor(v.id);
+        try{ await navigator.clipboard.writeText(url); }
+        catch(e){ window.prompt('Copy this link:', url); return; }
+        btn.textContent = 'Copied'; btn.classList.add('ok');
+        setTimeout(() => { btn.textContent = 'Copy link'; btn.classList.remove('ok'); }, 1400);
+      };
+
+      meta.appendChild(name); meta.appendChild(btn);
+      card.appendChild(media); card.appendChild(meta);
+      grid.appendChild(card);
+    }
+    // Re-anchor once media has settled, so a deep link lands on the right card.
+    // The highlight is applied in JS: cards are built after the fragment resolves,
+    // so :target never matches them.
+    const jump = () => {
+      if(!location.hash) return;
+      const t = document.getElementById(location.hash.slice(1));
+      if(!t) return;
+      for(const c of document.querySelectorAll('.card.is-target')) c.classList.remove('is-target');
+      t.classList.add('is-target');
+      t.scrollIntoView();
+    };
+    jump();
+    window.addEventListener('load', jump);
+    window.addEventListener('hashchange', jump);
+  })
+  .catch(showEmpty);
+
+function showEmpty(){
+  countEl.textContent = '';
+  grid.innerHTML = '<div class="empty">No videos yet. Drop <code>.mp4</code> or <code>.gif</code> files into ' +
+    '<code>docs/media/</code>, then run <code>python3 docs/refresh.py</code>.</div>';
+}
+</script>
+</body>
+</html>
